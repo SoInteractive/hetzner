@@ -16,12 +16,17 @@ pipeline {
   environment {
     GIT_COMMITER = sh( script: "git show -s --pretty=%an", returnStdout: true ).trim()
     GIT_URL = sh( script: "git config --get remote.origin.url", returnStdout: true ).trim()
+    CHANGE_ID = env.BRANCH_NAME.replaceFirst(/^PR-/, "")
+    REPO_NAME = sh ( script: "basename `git rev-parse --show-toplevel`", returnStdout: true).trim()
   }
   stages {
-    stage('Check syntax') {
+    stage('Show variables') {
       steps {
         sh 'env | sort'
-        sh 'echo $CHANGE_ID'
+      }
+    }
+    stage('Check syntax') {
+      steps {
         sh 'molecule syntax'
       }
     }
@@ -41,14 +46,14 @@ pipeline {
         sh 'molecule verify'
       }
     }
-/*  stage('Merge Pull Request'){
-      when { branch "*" }
+  stage('Merge Pull Request'){
+      when { branch "PR-*" }
       steps {
-         withCredentials([usernamePassword(credentialsId: 'credential-value', usernameVariable: 'ACCESS_TOKEN_USERNAME', passwordVariable: 'ACCESS_TOKEN_PASSWORD',)]) {
-                    sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}'  https://github.ibm.com/api/v3/repos/org-name/repo-name/pulls/$CHANGE_ID/merge?access_token=$ACCESS_TOKEN_PASSWORD"
+          withCredentials([[$class: 'StringBinding', credentialsId: '84b13c41-cc5e-4802-b057-e85c232d347b', variable: 'ACCESS_TOKEN_PASSWORD']]) {
+                    sh "curl -X PUT -d '{\"commit_title\": \"Merge pull request\"}' https://api.github.com/repos/SoInteractive/$REPO_NAME/pulls/$CHANGE_ID/merge?access_token=$ACCESS_TOKEN_PASSWORD"
         }
       }
-    }*/
+    }
 /*  stage('Import to ansible galaxy'){
       when { branch "PR-*" }
       steps {
