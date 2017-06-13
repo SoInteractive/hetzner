@@ -40,6 +40,7 @@ pipeline {
         sh 'molecule converge'
       }
     }
+    
     stage('Run Tests'){
       steps {
         sh 'molecule idempotence'
@@ -54,7 +55,6 @@ pipeline {
         }
       }
     }
-
 /*  stage('Import to ansible galaxy'){
       when { branch "PR-*" }
       steps {
