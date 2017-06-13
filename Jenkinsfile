@@ -1,7 +1,5 @@
 #!groovy
 
-
-
 /* Declarative pipeline */
 pipeline {
   agent {
