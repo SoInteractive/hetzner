@@ -54,6 +54,7 @@ pipeline {
         }
       }
     }
+    
 /*  stage('Import to ansible galaxy'){
       when { branch "PR-*" }
       steps {
